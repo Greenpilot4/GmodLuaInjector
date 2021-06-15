@@ -26,14 +26,20 @@ void main()
     char currDir[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, currDir);
 
-    std::string filePath = std::string(currDir + std::string("\\GmodLuaInjector.dll"));
+    std::string pathName;
+    std::cout << "[?] DLL Name: ";
+    std::cin >> pathName;
+    pathName = std::string("\\") + pathName;
+
+    std::string filePath = std::string(currDir + pathName);
     if (std::fstream(filePath).bad())
     {
         SetConsoleColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
         std::cout << "[!] Please, make sure GmodLuaInjector.dll is next to this .exe." << std::endl;
         getchar(); return;
     }
-    const char* path = "C:/GaztoofScriptHook/GmodLuaInjector.dll";
+
+    const char* path = std::string(currDir + pathName).c_str();;
     
     HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gmodPID);
     if (hProc == INVALID_HANDLE_VALUE)
@@ -65,8 +71,13 @@ void main()
         getchar(); return;
     }
 
-    CloseHandle(hProc);
-    VirtualFreeEx(hProc, strAddy, 0, MEM_RELEASE);
-    std::cout << "[*] Successfully injected." << std::endl;
-    getchar();
+    else 
+    {
+        CloseHandle(hProc);
+        VirtualFreeEx(hProc, strAddy, 0, MEM_RELEASE);
+        std::cout << "[*] Successfully injected." << std::endl;
+
+        std::cout << std::endl;
+        system("pause");
+    }
 }
